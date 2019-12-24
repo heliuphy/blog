@@ -1,0 +1,27 @@
+on:
+  schedule:
+    - cron: 0 20 1 * *
+  #push:
+    #branches: 
+      #- master
+name: Hexo Deploy
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clean
+      uses: heliuphy/action-hexo@master
+      with:
+        args: clean
+    - name: Generate
+      uses: heliuphy/action-hexo@master
+      with:
+        args: generate
+    - name: Deploy
+      uses: heliuphy/action-hexo@master
+      env:
+        EMAIL: input emial ...
+        NAME: input name ...
+      with:
+        args: deploy
