@@ -1,39 +1,17 @@
 name: Deploy Hexo Blog to My VPS
 on:
-  push
-  # push:
-    # branches:    
-    #   - hexo
+  pull_request:
+  push:
+    branches:
+      - master
+      - hexo
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    # 切代码到 hexo
-    - name: Checkout hexo
-      uses: actions/checkout@v2
-      with:
-        ref: hexo
-    # 下载 git submodule
-    - name: Checkout submodules
-      uses: actions/checkout@v2
-      shell: bash
-      run: |
-        auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-        git submodule sync --recursive
-        git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-    - name: Hexo clean
-      uses: heliuphy/hexo-docker-action@master
-      with:
-        args: clean
-    - name: Hexo generate
-      uses: heliuphy/hexo-docker-action@master
-      with:
-        args: generate
-    # - name: Hexo deploy to VPS
-    #   uses: heliuphy/hexo-docker-action@master
-    #   env:
-    #     EMAIL: input email ...
-    #     NAME: input name ...
-    #     access-key-id: ${{ secrets.OSS_KEY_ID }}
-    #   with:
-    #     args: deploy
+      # Clone this repo
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: hexo
