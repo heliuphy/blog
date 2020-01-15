@@ -1,43 +1,37 @@
-on:
-  schedule:
-    - cron: 0 20 1 * *
-  #push:
-  #  branches:
-  #  - hexo
-  
-name: hexo deploy
-
+name: Deploy Hexo Blog to My VPS
+on: push
 jobs:
   build:
-    runs-on: ubuntu-18.04
+
+    runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js 10.x
-      uses: actions/setup-node@v1
+    # 切代码到 hexo
+    - name: Checkout hexo
+      uses: actions/checkout@v2
       with:
-        node-version: '10.x'
-    - name: prepare build env
-      env:
-        GH_ACTION_DEPLOY_KEY: ${{secrets.GH_ACTION_DEPLOY_KEY}}
-        NEXT_VERSION: v7.3.0
+        ref: hexo
+    # 下载 git submodule
+    - name: Checkout submodules
+    - uses: actions/checkout@v2
+      shell: bash
       run: |
-        mkdir -p ~/.ssh/
-        echo "$GH_ACTION_DEPLOY_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan github.com >> ~/.ssh/known_hosts
-        git config --global user.name 'heliuphy'
-        git config --global user.email 'liuhephy@gmail.com'
-        npm i -g hexo-cli
-        npm i
-        git clone --branch ${NEXT_VERSION} --depth=10  git@github.com:theme-next/hexo-theme-next.git themes/next
-        git checkout -b ${NEXT_VERSION}
-        git clone git@github.com:theme-next/theme-next-three --depth=1 themes/next/source/lib/three
-        git clone git@github.com:theme-next/theme-next-reading-progress --depth=1 themes/next/source/lib/reading_progress
-        git clone git@github.com:theme-next/theme-next-algolia-instant-search --depth=1 themes/next/source/lib/algolia-instant-search
-        # git clone git@github.com:theme-next/theme-next-fancybox3  --depth=1 themes/next/source/lib/fancybox
-        git clone git@github.com:theme-next/theme-next-pace --depth=1 themes/next/source/lib/pace
-    - name: deploy to github
+        auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+        git submodule sync --recursive
+        git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+    - name: Hexo clean
+      uses: heliuphy/hexo-docker-action@master
+      with:
+        args: clean
+    - name: Hexo generate
+      uses: heliuphy/hexo-docker-action@master
+      with:
+        args: generate
+    - name: Hexo deploy to VPS
+      uses: heliuphy/hexo-docker-action@master
       env:
-        HEXO_ALGOLIA_INDEXING_KEY: ${{secrets.HEXO_ALGOLIA_INDEXING_KEY}}
-      run: |
-        hexo generate && hexo algolia && hexo deploy
+        EMAIL: input email ...
+        NAME: input name ...
+        access-key-id: ${{ secrets.OSS_KEY_ID }}
+      with:
+        args: deploy
