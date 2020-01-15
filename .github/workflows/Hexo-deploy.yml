@@ -25,11 +25,11 @@ jobs:
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
       # hexo clean
       - name: Clean
-        uses: heliuphy/hexo-docker-action
+        uses: heliuphy/hexo-docker-action@master
         with:
           args: clean
       # hexo generate
       - name: Generate
-        uses: heliuphy/hexo-docker-action
+        uses: heliuphy/hexo-docker-action@master
         with:
           args: generate
