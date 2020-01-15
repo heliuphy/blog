@@ -27,11 +27,11 @@ jobs:
       uses: heliuphy/hexo-docker-action@master
       with:
         args: generate
-    - name: Hexo deploy to VPS
-      uses: heliuphy/hexo-docker-action@master
-      env:
-        EMAIL: input email ...
-        NAME: input name ...
-        access-key-id: ${{ secrets.OSS_KEY_ID }}
-      with:
-        args: deploy
+    # - name: Hexo deploy to VPS
+    #   uses: heliuphy/hexo-docker-action@master
+    #   env:
+    #     EMAIL: input email ...
+    #     NAME: input name ...
+    #     access-key-id: ${{ secrets.OSS_KEY_ID }}
+    #   with:
+    #     args: deploy
