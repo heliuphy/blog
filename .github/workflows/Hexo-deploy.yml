@@ -19,12 +19,12 @@ jobs:
         auth_header="$(git config --local --get http.https://github.com/.extraheader)"
         git submodule sync --recursive
         git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+    - uses: heliuphy/hexo-docker-action@master
     - name: Hexo clean
-      uses: heliuphy/hexo-docker-action@master
       with:
         args: clean
+    - uses: heliuphy/hexo-docker-action@master
     - name: Hexo generate
-      uses: heliuphy/hexo-docker-action@master
       with:
         args: generate
     # - name: Hexo deploy to VPS
